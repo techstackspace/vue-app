@@ -1,25 +1,25 @@
 // Composition API
 const app = Vue.createApp({
-  setup() {
-    const message = Vue.ref('This is a new message')
-    const count = Vue.ref(0)
-    const clickMe = () => {
-      console.log('This button was clicked')
-      message.value = 'Updated message'
-    }
-    const increment = () => {
-      count.value++
-    }
-    return {
-      message,
-      clickMe,
-      count,
-      increment,
-    }
-  },
-})
+	setup() {
+		const message = Vue.ref("This is a new message");
+		const count = Vue.ref(0);
+		const clickMe = () => {
+			console.log("This button was clicked");
+			message.value = "Updated message";
+		};
+		const increment = () => {
+			count.value++;
+		};
+		return {
+			message,
+			clickMe,
+			count,
+			increment,
+		};
+	},
+});
 
-app.mount('#app')
+app.mount("#app");
 
 // Options Method
 // const app = Vue.createApp({
