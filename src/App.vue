@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 interface User {
   status: string
   name: string
@@ -14,23 +14,53 @@ const userInfo = {
   isMarried: false,
   link: 'https://google.com',
 } as User
-const skills = ref(['HTML', 'CSS', 'JavaScript', 'Vue'])
+interface SkillTodo {
+  userId: number | string
+  id: number | string
+  title: string
+  completed: boolean
+}
+const skills = ref<SkillTodo[]>([])
 const user = userInfo.name
 const newTask = ref('')
+const message = ref<null | string>(null)
+const error = ref<null | string>(null)
 const handleTaskSubmission = () => {
   if (newTask.value.trim() !== '') {
-    skills.value.push(newTask.value)
+    skills.value.push({
+      userId: newTask.value,
+      id: newTask.value,
+      title: newTask.value,
+      completed: true,
+    })
     newTask.value = ''
   } else {
-    return skills.value // return a message instead
+    message.value = 'Message can not be empty'
+    setTimeout(() => {
+      message.value = null
+    }, 3000)
   }
 }
 const handleTaskDeletion = (id: string) => {
-  // skill.value.splice(index, 1) // need to find the index
   skills.value = skills.value.filter((skill) => {
-    return skill !== id
+    return skill.id !== id
   })
 }
+const fetchAllSkills = async () => {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos')
+    const data: SkillTodo[] = await response.json()
+    skills.value = data
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err.message
+    } else {
+      error.value = 'An unknown error occured'
+    }
+  }
+}
+
+onMounted(fetchAllSkills)
 </script>
 
 <template>
@@ -47,6 +77,7 @@ const handleTaskDeletion = (id: string) => {
     </ul>
 
     <h2>User Tasks</h2>
+    <p v-if="message">{{ message }}</p>
     <form @submit.prevent="handleTaskSubmission">
       <input
         type="text"
@@ -59,9 +90,9 @@ const handleTaskDeletion = (id: string) => {
       <button type="submit">Submit Task</button>
     </form>
     <ul>
-      <li v-for="(skill, index) in skills" :key="skill">
-        <span>{{ index + 1 }}) </span><span>{{ skill }}</span> {{}}
-        <button @click="handleTaskDeletion(skill)">&times</button>
+      <li v-for="(skill, index) in skills" :key="skill.title">
+        <span>{{ index + 1 }}) </span><span>{{ skill.title }}</span> {{}}
+        <button @click="handleTaskDeletion(skill.title)">&times</button>
       </li>
     </ul>
   </div>
