@@ -44,7 +44,7 @@ const handleTaskSubmission = () => {
 };
 const handleTaskDeletion = (id: string) => {
 	skills.value = skills.value.filter((skill) => {
-		return skill.id !== id;
+		return skill.title !== id;
 	});
 };
 const fetchAllSkills = async () => {
