@@ -14,6 +14,7 @@ const user = userInfo.name
 const newTask = ref('')
 const message = ref<null | string>(null)
 const error = ref<null | string>(null)
+const isLoading = ref(false)
 const handleTaskSubmission = () => {
   if (newTask.value.trim() !== '') {
     skills.value.push({
@@ -36,6 +37,7 @@ const handleTaskDeletion = (id: string) => {
   })
 }
 const fetchAllSkills = async () => {
+  isLoading.value = true
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/todos')
     const data: SkillTodo[] = await response.json()
@@ -46,6 +48,8 @@ const fetchAllSkills = async () => {
     } else {
       error.value = 'An unknown error occured'
     }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -80,7 +84,9 @@ onMounted(fetchAllSkills)
         <button type="submit">Submit Task</button>
       </form>
     </div>
-    <ul>
+    <p v-if="isLoading">Loading...</p>
+    <p v-else-if="error">{{ error }}</p>
+    <ul v-else>
       <li v-for="(skill, index) in skills" :key="skill.title">
         <span>{{ index + 1 }}) </span><span>{{ skill.title }}</span> {{}}
         <button @click="handleTaskDeletion(skill.title)">&times</button>
@@ -97,5 +103,9 @@ h2 + div {
 div > p {
   position: absolute;
   top: -35px;
+}
+
+li {
+  list-style-type: none;
 }
 </style>
